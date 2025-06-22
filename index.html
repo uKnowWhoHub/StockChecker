@@ -132,7 +132,10 @@ input, select {
 <div id="wizard" class="screen center">
   <h2 id="wizardItem"></h2>
   <div id="progress"></div>
-  <input id="wizardInput" type="number" placeholder="Current stock">
+  <input id="wizardInput" 
+         type="number" 
+         placeholder="Current stock" 
+         autocomplete="off">
   <div>
     <button class="btn next-button"onclick="nextWizardItem()">Next</button>
     <button class="btn"onclick="prevWizardItem()">Back</button>
