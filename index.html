@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Stock Checker</title>
+<title>Harry's Bar Stock Checker</title>
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
@@ -98,6 +98,13 @@ input, select {
   font-size: 0.9rem;
   padding: 0.5rem;
   margin: 0.25rem 0;
+}
+#confetti {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 9999;
 }
 </style>
 </head>
@@ -321,11 +328,11 @@ function animateConfetti() {
   });
   requestAnimationFrame(animateConfetti);
 }
-window.addEventListener("resize", resizeCanvas);
 function resizeCanvas() {
   confettiCanvas.width = window.innerWidth;
   confettiCanvas.height = window.innerHeight;
 }
+window.addEventListener("resize", resizeCanvas);
 resizeCanvas();
 animateConfetti();
 </script>
