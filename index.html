@@ -61,7 +61,6 @@ body {
   justify-content: space-between;
   align-items: center;
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-  transition: background 0.3s;
 }
 .list-item.crossed {
   text-decoration: line-through;
@@ -134,7 +133,44 @@ input, select {
 </div>
 
 <script>
-const defaultItems = [{"name":"VK Watermelon","max":18,"current":0},{"name":"VK Tropical","max":12,"current":0},{"name":"VK Black Cherry","max":24,"current":0},{"name":"VK Apple Mango","max":18,"current":0},{"name":"VK Blue","max":18,"current":0},{"name":"VK Ice","max":18,"current":0},{"name":"Guinness 0%","max":18,"current":0},{"name":"Heineken 0%","max":12,"current":0},{"name":"Reko 0%","max":10,"current":0},{"name":"Sublime","max":18,"current":0},{"name":"Indian Tonic","max":36,"current":0},{"name":"Blue Monster","max":10,"current":0},{"name":"Monster Original","max":10,"current":0},{"name":"Pink Monster","max":10,"current":0},{"name":"White Monster","max":10,"current":0},{"name":"Newky Brown","max":15,"current":0},{"name":"Desperado","max":12,"current":0},{"name":"Heineken alc","max":12,"current":0},{"name":"Sol","max":6,"current":0},{"name":"Budweiser","max":18,"current":0},{"name":"Fresh Orange","max":18,"current":0},{"name":"Pineapple Juice","max":18,"current":0},{"name":"Prosecco","max":12,"current":0},{"name":"Pinot Grigio","max":4,"current":0},{"name":"Pinot Grigio Rosato","max":4,"current":0},{"name":"White Zinfandel","max":4,"current":0},{"name":"Sauvignon Blanc","max":4,"current":0},{"name":"Tequila Rose","max":5,"current":0},{"name":"Jungfrau","max":5,"current":0},{"name":"Kahula","max":5,"current":0},{"name":"Baileys","max":4,"current":0},{"name":"Tia Maria","max":4,"current":0},{"name":"Mango Rasp Reko","max":10,"current":0},{"name":"Strawberry Lime Reko","max":10,"current":0},{"name":"Wild Berries Reko","max":10,"current":0},{"name":"Blumers","max":5,"current":0},{"name":"Hoopers","max":10,"current":0},{"name":"Hooch","max":10,"current":0}];
+const defaultItems = [
+  {"name":"Tequila Rose","max":5,"current":0},
+  {"name":"Jungfrau","max":5,"current":0},
+  {"name":"Kahula","max":5,"current":0},
+  {"name":"Baileys","max":4,"current":0},
+  {"name":"Tia Maria","max":4,"current":0},
+  {"name":"Blumers","max":5,"current":0},
+  {"name":"Wild Berries Reko","max":10,"current":0},
+  {"name":"Strawberry Lime Reko","max":10,"current":0},
+  {"name":"Mango Rasp Reko","max":10,"current":0},
+  {"name":"Hoopers","max":10,"current":0},
+  {"name":"Hooch","max":10,"current":0},
+  {"name":"Newky Brown","max":15,"current":0},
+  {"name":"Budweiser","max":18,"current":0},
+  {"name":"Sol","max":6,"current":0},
+  {"name":"Heineken","max":12,"current":0},
+  {"name":"Desperado","max":12,"current":0},
+  {"name":"Fresh Orange Juice","max":18,"current":0},
+  {"name":"Pineapple Juice","max":18,"current":0},
+  {"name":"Sauvignon Blanc","max":4,"current":0},
+  {"name":"White Zinfandel","max":4,"current":0},
+  {"name":"Pinot Grigio","max":4,"current":0},
+  {"name":"Pinot Grigio Rosato","max":4,"current":0},
+  {"name":"Blue Monster","max":10,"current":0},
+  {"name":"Original Monster","max":10,"current":0},
+  {"name":"Pink Monster","max":10,"current":0},
+  {"name":"White Monster","max":10,"current":0},
+  {"name":"Black Cherry VK","max":24,"current":0},
+  {"name":"Tropical Fruits VK","max":12,"current":0},
+  {"name":"Watermelon VK","max":18,"current":0},
+  {"name":"Ice VK","max":18,"current":0},
+  {"name":"Apple and Mango VK","max":18,"current":0},
+  {"name":"Guinness Zero","max":18,"current":0},
+  {"name":"Heineken Zero","max":12,"current":0},
+  {"name":"Rekorderlig Zero","max":10,"current":0},
+  {"name":"Slimline Tonic","max":36,"current":0},
+  {"name":"Indian Tonic","max":36,"current":0}
+];
 let items = JSON.parse(localStorage.getItem('stockItems'));
 if (!items || !Array.isArray(items) || items.length === 0) {
   items = defaultItems;
