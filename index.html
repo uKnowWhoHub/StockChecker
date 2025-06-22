@@ -2,15 +2,18 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Stock Checker</title>
+<title>Harry's Bar Stock Checker</title>
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
 <style>
-* { box-sizing: border-box; }
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+* {
+  box-sizing: border-box;
+}
 body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(135deg, #111, #222);
+  color: #f9f9f9;
   margin: 0;
-  font-family: 'Segoe UI', sans-serif;
-  background: #f0f2f5;
-  color: #333;
 }
 .screen {
   display: none;
@@ -18,31 +21,37 @@ body {
   max-width: 500px;
   margin: 0 auto;
 }
-.screen.active {
+.active {
   display: block;
-  animation: fadeIn 0.3s ease-in-out;
 }
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+.center {
+  text-align: center;
 }
-.center { text-align: center; }
+.logo {
+  max-width: 200px;
+  margin: 1rem auto;
+}
+h1, h2 {
+  font-weight: 600;
+}
 .btn {
-  background: #007bff;
-  color: white;
   padding: 1rem;
+  font-size: 1.1rem;
   border-radius: 10px;
   border: none;
-  font-size: 1.1rem;
-  margin-top: 1rem;
+  margin: 1rem 0;
   cursor: pointer;
   width: 100%;
+  transition: all 0.3s ease;
 }
-.btn:hover { background: #0056b3; }
-.next-button {
+.btn:hover {
+  transform: scale(1.03);
+}
+.btn.next-button {
   background: #28a745;
+  color: #fff;
 }
-.next-button:hover {
+.btn.next-button:hover {
   background: #218838;
 }
 .settings-icon {
@@ -53,65 +62,47 @@ body {
   cursor: pointer;
 }
 .list-item {
-  background: white;
+  background: #333;
   padding: 1rem;
   margin: 0.5rem 0;
   border-radius: 8px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 .list-item.crossed {
   text-decoration: line-through;
   opacity: 0.5;
 }
-input, select {
-  width: 100%;
-  padding: 0.8rem;
-  font-size: 1rem;
-  margin: 0.5rem 0 1rem;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-}
-.item-actions button {
-  margin-left: 5px;
-  padding: 0.3rem 0.6rem;
-  font-size: 0.9rem;
+.list-item button {
+  padding: 0.3rem 0.5rem;
 }
 .clear-btn {
-  background: #dc3545;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  padding: 0.3rem 0.6rem;
-  font-size: 0.9rem;
-  cursor: pointer;
+  background: #ff3d3d;
+  color: #fff;
+  border-radius: 5px;
 }
 #summaryList .list-item {
   font-size: 0.9rem;
-  padding: 0.5rem;
-  margin: 0.25rem 0;
 }
 </style>
 </head>
 <body>
-<div class="settings-icon"onclick="showScreen('settings')">⚙️</div>
-
 <!-- START SCREEN -->
 <div id="start" class="screen active center">
+  <img src="your-logo.png" alt="Harry's Bar" class="logo">
   <h1>Stock Checker</h1>
   <button class="btn"onclick="startStockCheck()">Start Stock Check</button>
 </div>
 
 <!-- SETTINGS SCREEN -->
 <div id="settings" class="screen">
+  <div class="settings-icon"onclick="showScreen('start')">⬅️</div>
   <h2>Manage Items</h2>
   <input id="itemName" placeholder="Item name">
   <input id="itemMax" type="number" placeholder="Max stock">
   <button class="btn"onclick="addItem()">Add Item</button>
   <div id="itemList"></div>
-  <button class="btn"onclick="showScreen('start')">Back</button>
 </div>
 
 <!-- WIZARD SCREEN -->
@@ -132,7 +123,13 @@ input, select {
   <button class="btn"onclick="showScreen('start')">Done</button>
 </div>
 
+<!-- CONFETTI CANVAS -->
+<canvas id="confetti"></canvas>
+
 <script>
+/* ==========================
+        INITIAL ITEMS
+========================== */
 const defaultItems = [
   {"name":"Tequila Rose","max":5,"current":0},
   {"name":"Jungfrau","max":5,"current":0},
@@ -168,7 +165,7 @@ const defaultItems = [
   {"name":"Guinness Zero","max":18,"current":0},
   {"name":"Heineken Zero","max":12,"current":0},
   {"name":"Rekorderlig Zero","max":10,"current":0},
-  {"name":"Slimline Tonic","max":36,"current":0},
+  {"name":"Slimline","max":36,"current":0},
   {"name":"Indian Tonic","max":36,"current":0}
 ];
 let items = JSON.parse(localStorage.getItem('stockItems'));
@@ -177,12 +174,17 @@ if (!items || !Array.isArray(items) || items.length === 0) {
 }
 let currentWizardIndex = 0;
 
+/* ==========================
+      UTILITY & MAIN FLOW
+========================== */
 function showScreen(id) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   if (id === 'settings') renderItemList();
 }
-
+function saveItems() {
+  localStorage.setItem('stockItems', JSON.stringify(items));
+}
 function addItem() {
   const name = document.getElementById('itemName').value.trim();
   const max = parseInt(document.getElementById('itemMax').value);
@@ -192,11 +194,6 @@ function addItem() {
   document.getElementById('itemMax').value = '';
   renderItemList();
 }
-
-function saveItems() {
-  localStorage.setItem('stockItems', JSON.stringify(items));
-}
-
 function deleteItem(index) {
   if (confirm('Delete this item?')) {
     items.splice(index, 1);
@@ -204,7 +201,6 @@ function deleteItem(index) {
     renderItemList();
   }
 }
-
 function editMax(index) {
   const newMax = prompt('Enter new max stock:', items[index].max);
   if (newMax && !isNaN(parseInt(newMax))) {
@@ -213,7 +209,6 @@ function editMax(index) {
     renderItemList();
   }
 }
-
 function renderItemList() {
   const container = document.getElementById('itemList');
   container.innerHTML = '';
@@ -229,14 +224,12 @@ function renderItemList() {
     container.appendChild(div);
   });
 }
-
 function startStockCheck() {
   if (items.length === 0) return alert('Add items in settings first.');
   currentWizardIndex = 0;
   showScreen('wizard');
   showWizardItem();
 }
-
 function showWizardItem() {
   const item = items[currentWizardIndex];
   document.getElementById("wizardItem").textContent = `How many ${item.name}?`;
@@ -244,14 +237,12 @@ function showWizardItem() {
   document.getElementById("wizardInput").value = item.current || "";  
   document.getElementById("wizardInput").focus();
 }
-
 function prevWizardItem() {
   if (currentWizardIndex > 0) {
     currentWizardIndex--;
     showWizardItem();
   }
 }
-
 function nextWizardItem() {
   const val = parseInt(document.getElementById("wizardInput").value);
   items[currentWizardIndex].current = isNaN(val) ? 0 : val;
@@ -263,7 +254,6 @@ function nextWizardItem() {
     showWizardItem();
   }
 }
-
 function showSummary() {
   showScreen("summary");
   const container = document.getElementById("summaryList");
@@ -281,12 +271,53 @@ function showSummary() {
     button.addEventListener("click", () => {
       label.textContent = `${item.name}: 0`;
       div.classList.add("crossed");
+      launchConfetti();
     });
     div.appendChild(label);
     div.appendChild(button);
     container.appendChild(div);
   });
+  launchConfetti();
 }
+
+/* ==========================
+            CONFETTI
+========================== */
+const confettiCanvas = document.getElementById("confetti");
+const ctx = confettiCanvas.getContext("2d");
+let particles = [];
+function launchConfetti() {
+  for (let i = 0; i < 100; i++) {
+    particles.push({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
+      speedX: (Math.random()-0.5) * 6,
+      speedY: Math.random() * 5 + 5,
+      color: `hsl(${Math.random() * 360},100%,50%)`
+    });
+  }
+}
+function animateConfetti() {
+  ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+  particles.forEach((p, i) => {
+    p.x += p.speedX;
+    p.y += p.speedY;
+    p.speedY += 0.1;
+    ctx.fillStyle = p.color;
+    ctx.fillRect(p.x, p.y, 6, 6);
+    if (p.y > window.innerHeight) {
+      particles.splice(i, 1);
+    }
+  });
+  requestAnimationFrame(animateConfetti);
+}
+window.addEventListener("resize", resizeCanvas);
+function resizeCanvas() {
+  confettiCanvas.width = window.innerWidth;
+  confettiCanvas.height = window.innerHeight;
+}
+resizeCanvas();
+animateConfetti();
 </script>
 </body>
 </html>
