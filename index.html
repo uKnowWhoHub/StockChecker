@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Stock Checker</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <style>
 * { box-sizing: border-box; }
 body {
@@ -83,14 +83,23 @@ input, select {
   font-size: 0.9rem;
   cursor: pointer;
 }
+#summaryList .list-item {
+  font-size: 0.9rem;
+  padding: 0.5rem;
+  margin: 0.25rem 0;
+}
 </style>
 </head>
 <body>
 <div class="settings-icon"onclick="showScreen('settings')">⚙️</div>
+
+<!-- START SCREEN -->
 <div id="start" class="screen active center">
   <h1>Stock Checker</h1>
   <button class="btn"onclick="startStockCheck()">Start Stock Check</button>
 </div>
+
+<!-- SETTINGS SCREEN -->
 <div id="settings" class="screen">
   <h2>Manage Items</h2>
   <input id="itemName" placeholder="Item name">
@@ -99,16 +108,25 @@ input, select {
   <div id="itemList"></div>
   <button class="btn"onclick="showScreen('start')">Back</button>
 </div>
+
+<!-- WIZARD SCREEN -->
 <div id="wizard" class="screen center">
   <h2 id="wizardItem"></h2>
+  <div id="progress"></div>
   <input id="wizardInput" type="number" placeholder="Current stock">
-  <button class="btn"onclick="nextWizardItem()">Next</button>
+  <div>
+    <button class="btn"onclick="prevWizardItem()">Back</button>
+    <button class="btn"onclick="nextWizardItem()">Next</button>
+  </div>
 </div>
+
+<!-- SUMMARY SCREEN -->
 <div id="summary" class="screen">
   <h2>Restock Summary</h2>
   <div id="summaryList"></div>
   <button class="btn"onclick="showScreen('start')">Done</button>
 </div>
+
 <script>
 const defaultItems = [{"name":"VK Watermelon","max":18,"current":0},{"name":"VK Tropical","max":12,"current":0},{"name":"VK Black Cherry","max":24,"current":0},{"name":"VK Apple Mango","max":18,"current":0},{"name":"VK Blue","max":18,"current":0},{"name":"VK Ice","max":18,"current":0},{"name":"Guinness 0%","max":18,"current":0},{"name":"Heineken 0%","max":12,"current":0},{"name":"Reko 0%","max":10,"current":0},{"name":"Sublime","max":18,"current":0},{"name":"Indian Tonic","max":36,"current":0},{"name":"Blue Monster","max":10,"current":0},{"name":"Monster Original","max":10,"current":0},{"name":"Pink Monster","max":10,"current":0},{"name":"White Monster","max":10,"current":0},{"name":"Newky Brown","max":15,"current":0},{"name":"Desperado","max":12,"current":0},{"name":"Heineken alc","max":12,"current":0},{"name":"Sol","max":6,"current":0},{"name":"Budweiser","max":18,"current":0},{"name":"Fresh Orange","max":18,"current":0},{"name":"Pineapple Juice","max":18,"current":0},{"name":"Prosecco","max":12,"current":0},{"name":"Pinot Grigio","max":4,"current":0},{"name":"Pinot Grigio Rosato","max":4,"current":0},{"name":"White Zinfandel","max":4,"current":0},{"name":"Sauvignon Blanc","max":4,"current":0},{"name":"Tequila Rose","max":5,"current":0},{"name":"Jungfrau","max":5,"current":0},{"name":"Kahula","max":5,"current":0},{"name":"Baileys","max":4,"current":0},{"name":"Tia Maria","max":4,"current":0},{"name":"Mango Rasp Reko","max":10,"current":0},{"name":"Strawberry Lime Reko","max":10,"current":0},{"name":"Wild Berries Reko","max":10,"current":0},{"name":"Blumers","max":5,"current":0},{"name":"Hoopers","max":10,"current":0},{"name":"Hooch","max":10,"current":0}];
 let items = JSON.parse(localStorage.getItem('stockItems'));
@@ -122,6 +140,7 @@ function showScreen(id) {
   document.getElementById(id).classList.add('active');
   if (id === 'settings') renderItemList();
 }
+
 function addItem() {
   const name = document.getElementById('itemName').value.trim();
   const max = parseInt(document.getElementById('itemMax').value);
@@ -131,9 +150,11 @@ function addItem() {
   document.getElementById('itemMax').value = '';
   renderItemList();
 }
+
 function saveItems() {
   localStorage.setItem('stockItems', JSON.stringify(items));
 }
+
 function deleteItem(index) {
   if (confirm('Delete this item?')) {
     items.splice(index, 1);
@@ -141,6 +162,7 @@ function deleteItem(index) {
     renderItemList();
   }
 }
+
 function editMax(index) {
   const newMax = prompt('Enter new max stock:', items[index].max);
   if (newMax && !isNaN(parseInt(newMax))) {
@@ -149,6 +171,7 @@ function editMax(index) {
     renderItemList();
   }
 }
+
 function renderItemList() {
   const container = document.getElementById('itemList');
   container.innerHTML = '';
@@ -164,20 +187,31 @@ function renderItemList() {
     container.appendChild(div);
   });
 }
+
 function startStockCheck() {
   if (items.length === 0) return alert('Add items in settings first.');
   currentWizardIndex = 0;
   showScreen('wizard');
   showWizardItem();
 }
+
 function showWizardItem() {
   const item = items[currentWizardIndex];
-  document.getElementById('wizardItem').textContent = `How many ${item.name}?`;
-  document.getElementById('wizardInput').value = '';
-  document.getElementById('wizardInput').focus();
+  document.getElementById(\"wizardItem\").textContent = `How many ${item.name}?`;
+  document.getElementById(\"progress\").textContent = `${currentWizardIndex + 1}/${items.length}`;
+  document.getElementById(\"wizardInput\").value = item.current || \"\";
+  document.getElementById(\"wizardInput\").focus();
 }
+
+function prevWizardItem() {
+  if (currentWizardIndex > 0) {
+    currentWizardIndex--;
+    showWizardItem();
+  }
+}
+
 function nextWizardItem() {
-  const val = parseInt(document.getElementById('wizardInput').value);
+  const val = parseInt(document.getElementById(\"wizardInput\").value);
   items[currentWizardIndex].current = isNaN(val) ? 0 : val;
   currentWizardIndex++;
   if (currentWizardIndex >= items.length) {
@@ -187,23 +221,24 @@ function nextWizardItem() {
     showWizardItem();
   }
 }
+
 function showSummary() {
-  showScreen('summary');
-  const container = document.getElementById('summaryList');
-  container.innerHTML = '';
+  showScreen(\"summary\");
+  const container = document.getElementById(\"summaryList\");
+  container.innerHTML = \"\";
   items.forEach(item => {
     const diff = item.max - item.current;
     if (diff <= 0) return;
-    const div = document.createElement('div');
-    div.className = 'list-item';
-    const label = document.createElement('span');
+    const div = document.createElement(\"div\");
+    div.className = \"list-item\";
+    const label = document.createElement(\"span\");
     label.textContent = `${item.name}: ${diff}`;
-    const button = document.createElement('button');
-    button.className = 'clear-btn';
-    button.textContent = '✔';
-    button.addEventListener('click', () => {
+    const button = document.createElement(\"button\");
+    button.className = \"clear-btn\";
+    button.textContent = \"✔\";
+    button.addEventListener(\"click\", () => {
       label.textContent = `${item.name}: 0`;
-      div.classList.add('crossed');
+      div.classList.add(\"crossed\");
     });
     div.appendChild(label);
     div.appendChild(button);
